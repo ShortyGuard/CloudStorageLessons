@@ -3,6 +3,7 @@ package lesson1.server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -42,11 +43,39 @@ public class ClientHandler implements Runnable {
                         out.writeUTF("ERROR");
                     }
                 } else if ("download".equals(command)) {
-                    // TODO: 02.03.2021
-                    // realize download
+                    try {
+                        File file = new File("server" + File.separator + in.readUTF());
+                        if (!file.exists()) {
+                            out.writeUTF("FILE NOT FOUND");
+                        } else {
+                            out.writeUTF("FILE");
+                            long size = file.length();
+                            out.writeLong(size);
+
+                            FileInputStream fis = new FileInputStream(file);
+
+                            byte[] buffer = new byte[256];
+                            for (int i = 0; i < (size + 255) / 256; i++) {
+                                int read = fis.read(buffer);
+                                out.write(buffer, 0, read);
+                            }
+                            fis.close();
+                        }
+                    } catch (Exception e) {
+                        out.writeUTF("ERROR");
+                    }
                 } else if ("remove".equals(command)) {
-                    // TODO: 02.03.2021
-                    // realize remove
+                    try {
+                        File file = new File("server" + File.separator + in.readUTF());
+                        if (file.exists()) {
+                            file.delete();
+                            out.writeUTF("DONE");
+                        } else {
+                            out.writeUTF("FILE NOT FOUND");
+                        }
+                    } catch (IOException e) {
+                        out.writeUTF("ERROR");
+                    }
                 }
             }
         } catch (IOException e) {
