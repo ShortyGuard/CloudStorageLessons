@@ -20,6 +20,7 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Start new ClientHandler");
         try (DataOutputStream out = new DataOutputStream(socket.getOutputStream());
              DataInputStream in = new DataInputStream(socket.getInputStream())) {
             while (true) {
@@ -81,5 +82,6 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("ClientHandler stopped");
     }
 }
